@@ -7,7 +7,7 @@
 
 #include "multimc_pragma.h"
 #include <wx/wx.h>
-
+#include <iostream>
 
 #include "instancectrl.h"
 
@@ -19,6 +19,7 @@
 
 #include "instancemodel.h"
 
+using namespace std;
 WX_DEFINE_OBJARRAY(InstanceItemArray);
 WX_DEFINE_OBJARRAY(InstanceGroupArray);
 
@@ -93,6 +94,7 @@ bool InstanceCtrl::Create(wxWindow* parent, InstanceModel *instList, wxWindowID 
 /// Member initialisation
 void InstanceCtrl::Init()
 {
+	cout << "You created a new instance control instance!!" << endl;
 	m_itemWidth = -1;
 	m_ImageSize = wxINST_DEFAULT_IMAGE_SIZE;
 	m_freezeCount = 0;

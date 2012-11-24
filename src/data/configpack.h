@@ -38,6 +38,7 @@ public:
 	wxString GetFileName() const;
 	wxString GetPackName() const;
 	wxString GetPackNotes() const;
+	bool     GetIsServer() const;
 
 	const std::vector<CPModInfo>* GetJarModList() const;
 	const std::vector<CPModInfo>* GetMLModList() const;
@@ -48,6 +49,7 @@ protected:
 
 	wxString m_fileName;
 	
+	bool m_serverPack;
 	wxString m_packName;
 	wxString m_packNotes;
 

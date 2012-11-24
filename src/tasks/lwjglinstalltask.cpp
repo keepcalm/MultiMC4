@@ -34,7 +34,8 @@ LWJGLInstallTask::LWJGLInstallTask(Instance *inst, const wxString &path)
 wxThread::ExitCode LWJGLInstallTask::TaskStart()
 {
 	SetStatus(_("Installing new LWJGL..."));
-
+	if (m_inst->GetType() == Instance::INST_TYPE_SERVER) 
+		SetStatus(_("LWJGL is not used on the server, skipping..."));
 	wxFFileInputStream in(m_path);
 	wxZipInputStream zipIn(in);
 

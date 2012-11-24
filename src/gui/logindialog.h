@@ -26,6 +26,8 @@ public:
 	LoginDialog(wxWindow* parent, wxString errorMsg = wxEmptyString, UserInfo info = UserInfo(), bool canGoOffline = false);
 	~LoginDialog();
 	
+	bool m_server = false;
+	
 	void OnUsernameEnter(wxCommandEvent &event);
 	void OnPasswordEnter(wxCommandEvent &event);
 	

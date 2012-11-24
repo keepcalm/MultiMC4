@@ -902,7 +902,8 @@ void MainWindow::LoginClicked()
 	{
 		return;
 	}
-
+	if (currentInstance->GetType() == Instance::INST_TYPE_SERVER)
+		DoLogin();
 	if (currentInstance->GetAutoLogin() && wxFileExists("lastlogin4"))
 	{
 		UserInfo lastLogin;
@@ -970,11 +971,16 @@ void MainWindow::ShowLoginDlg(wxString errorMsg)
 void MainWindow::OnLoginComplete( const LoginResult& result )
 {
 	auto currentInstance = instItems.GetSelectedInstance();
-	if (!result.loginFailed)
-	{
+	bool isServer =(currentInstance->GetType() == Instance::INST_TYPE_SERVER);
+	if (currentInstance->GetType() != Instance::INST_TYPE_SERVER && result.loginFailed) {
+		ShowLoginDlg(result.errorMessage);
+		return;
+	}
+	//if (!result.loginFailed)
+	//{
 		// Login success
 		Instance *inst = currentInstance;
-
+	if (!isServer) {
 		// If the session ID is empty, the game updater will not be run.
 		wxString sessionID = result.sessionID;
 		sessionID.Trim();
@@ -986,7 +992,14 @@ void MainWindow::OnLoginComplete( const LoginResult& result )
 			if(GetGUIMode() == GUI_Fancy)
 				UpdateInstPanel();
 		}
-		
+	}
+	else { // FIXME allow user to force update server
+		auto task =new GameUpdateTask(inst, false);
+		StartTask(task);
+		delete task;
+		if(GetGUIMode() == GUI_Fancy) 
+			UpdateInstPanel();
+	}
 		if (inst->ShouldRebuild())
 		{
 			auto task = new ModderTask (inst);
@@ -999,23 +1012,33 @@ void MainWindow::OnLoginComplete( const LoginResult& result )
 		cwin->SetName(wxT("InstConsoleWindow"));
 		if (!wxPersistenceManager::Get().RegisterAndRestore(cwin))
 			cwin->CenterOnScreen();
-		
-		if(MinecraftProcess::Launch(inst, cwin, result.username, result.sessionID) != nullptr)
-		{
-			Show(false);
-			cwin->Show(settings->GetShowConsole());
-			instListCtrl->ReloadAll();
+		if (isServer) {
+			if (MinecraftProcess::Launch(inst, cwing) != nullptr) {
+				Show(false);
+				cwin->Show(settings->GetShowConsole());
+				instListCtrl->ReloadAll();
+			}
+			else {
+				ShowLoginDlg(_("Minecraft failed to launch. Check your Java path."));
+			}
 		}
-		else
-		{
-			ShowLoginDlg(_("Minecraft failed to launch. Check your Java path."));
+		else {
+			if(MinecraftProcess::Launch(inst, cwin, result.username, result.sessionID) != nullptr)
+			{
+				Show(false);
+				cwin->Show(settings->GetShowConsole());
+				instListCtrl->ReloadAll();
+			}
+			else
+			{
+				ShowLoginDlg(_("Minecraft failed to launch. Check your Java path."));
+			}
 		}
-	}
-	else
+	/*else
 	{
 		// Login failed
 		ShowLoginDlg(result.errorMessage);
-	}
+	}*/
 }
 
 void MainWindow::RenameEvent()

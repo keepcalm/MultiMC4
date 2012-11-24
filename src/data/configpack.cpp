@@ -63,6 +63,14 @@ ConfigPack::ConfigPack(const wxString& fileName)
 		read_json(jsonIn, pt);
 
 		m_packName = wxStr(pt.get<std::string>("name"));
+		
+		// older packs don't have server support
+		m_serverPack = false;
+		try {
+			m_serverPack = pt.get<bool>("serverPack");
+		}
+		catch(ptree_bad_path e) {}
+		
 		m_packNotes = wxStr(pt.get<std::string>("notes"));
 
 		// Load the jar mod list.
@@ -147,6 +155,12 @@ const std::vector<ConfigPack::CPModInfo>* ConfigPack::GetCoreModList() const
 {
 	return &coreModInfoList;
 }
+
+bool ConfigPack::GetIsServer() const
+{
+	return m_serverPack;
+}
+
 
 ConfigPack::CPModInfo::CPModInfo(const wxString& id, const wxString& version)
 {

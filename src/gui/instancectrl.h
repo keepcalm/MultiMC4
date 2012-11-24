@@ -25,6 +25,9 @@
 #define wxINST_DEFAULT_MARGIN 3
 
 /*!
+ * InstanceCtrl is the main window shown in simple mods
+ */
+/*!
  * Forward declarations
  */
 

@@ -116,8 +116,8 @@ wxThread::ExitCode ModderTask::TaskStart()
 		{
 			wxString name = entry->GetName();
 
-			if (!name.Matches("META-INF*") &&
-				addedFiles.count(name) == 0)
+			if (!name.Matches("META-INF*") &&		// don't remove META-INF in the server
+				addedFiles.count(name) == 0 && m_inst->GetType() != Instance::INST_TYPE_SERVER)
 			{
 				if (!zipOut.CopyEntry(entry.release(), zipIn))
 					break;

@@ -14,11 +14,13 @@ wxString GetMinecraftJarVersion(wxFileName jar)
 		return version;
 	std::auto_ptr<wxZipEntry> entry;
 	// convert the local name we are looking for into the internal format
+	
 	wxString name = wxZipEntry::GetInternalName("net/minecraft/client/Minecraft.class",wxPATH_UNIX);
 
 	// open the zip
 	wxFFileInputStream inStream(jar.GetFullPath());
 	wxZipInputStream zipIn(inStream);
+	
 
 	// call GetNextEntry() until the required internal name is found
 	do

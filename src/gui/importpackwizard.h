@@ -45,6 +45,8 @@ protected:
 	wxTextCtrl *packNotesTextbox;
 
 	wxListBox *missingModsList;
+	
+	bool isServerPack;
 
 	DECLARE_EVENT_TABLE()
 };

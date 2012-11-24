@@ -16,6 +16,7 @@
 #include "multimc_pragma.h"
 #include "instance.h"
 #include "stdinstance.h"
+#include "serverinstance.h"
 
 #include <wx/filesys.h>
 #include <wx/sstream.h>
@@ -57,6 +58,9 @@ Instance *Instance::LoadInstance(wxString rootDir)
 
 		switch (type)
 		{
+		case INST_TYPE_SERVER:
+			return new ServerInstance(rootDir);
+			break;
 		case INST_TYPE_STANDARD:
 		default:
 			return new StdInstance(rootDir);

@@ -38,6 +38,8 @@ DowngradeTask::DowngradeTask(Instance *inst, const wxString& targetVersion)
 
 wxThread::ExitCode DowngradeTask::TaskStart()
 {
+	if (m_inst->GetType() == Instance::INST_TYPE_SERVER) 
+		return (ExitCode)2;
 	if (!wxDirExists("patches"))
 		wxMkdir("patches");
 

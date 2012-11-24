@@ -25,6 +25,7 @@
 #include "utils/fsutils.h"
 
 #include "stdinstance.h"
+#include "serverinstance.h"
 
 #include <memory>
 
@@ -92,12 +93,20 @@ bool ImportPackWizard::Start()
 			return false;
 
 		wxString instDir = Path::Combine(settings->GetInstDir(), instDirName);
+		isServerPack = m_pack->GetIsServer();
+		Instance *inst;
+		if (isServerPack) {
+			inst = new ServerInstance(instDir);
+		}
+		else {
 
-		Instance *inst = new StdInstance(instDir);
+			inst = new StdInstance(instDir);
+		}	
 		inst->SetName(instName);
 
 		m_mainWin->AddInstance(inst);
 
+		
 		ModList *centralModList = m_mainWin->GetCentralModList();
 
 		// Add jar mods...
@@ -141,6 +150,8 @@ bool ImportPackWizard::Start()
 				inst->GetCoreModList()->InsertMod(0, mod->GetFileName().GetFullPath());
 			}
 		}
+		
+		
 		
 		// Extract config files
 		wxFFileInputStream fileIn(m_pack->GetFileName());

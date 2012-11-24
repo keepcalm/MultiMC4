@@ -327,6 +327,20 @@ SettingsDialog::SettingsDialog( wxWindow* parent, wxWindowID id, SettingsBase* s
 			mcBox->Add(box, staticBoxOuterFlags);
 		}
 		
+		// Server mode group box
+		{
+			if (instanceMode) {
+				auto box = new wxStaticBoxSizer(wxVERTICAL, mcPanel, _("Server/Client settings"));
+				auto sizer = new wxGridBagSizer();
+				int row = 0;
+				
+				isServer = new wxCheckBox(mcPanel, ID_IsServer, _("Is this instance a server?"));
+				sizer->Add(isServer, wxGBPosition(row,0), wxGBSpan(1,2),wxALL, 4);
+				box->Add(sizer,staticBoxInnerFlags);
+				mcBox->Add(box,staticBoxOuterFlags);
+			}
+		}
+		
 		// Window size group box
 		{
 			auto box = new wxStaticBoxSizer(wxVERTICAL, mcPanel, _("Minecraft Window Size"));
@@ -611,6 +625,7 @@ bool SettingsDialog::ApplySettings()
 		currentSettings->SetMCWindowMaximize(winMaxCheckbox->IsChecked());
 		currentSettings->SetMCWindowWidth(winWidthSpin->GetValue());
 		currentSettings->SetMCWindowHeight(winHeightSpin->GetValue());
+		
 
 		if (useDevBuildsCheck->GetValue() && !currentSettings->GetUseDevBuilds())
 		{
@@ -671,6 +686,7 @@ Are you sure you want to use dev builds?"),
 	else
 	{
 		// apply instance settings to the instance
+		currentSettings->SetIsServer(isServer->GetValue());
 		bool haveUpdate = !updateUseDefs->GetValue();
 		if(haveUpdate)
 		{
@@ -841,6 +857,7 @@ void SettingsDialog::LoadSettings()
 	}
 	else
 	{
+		isServer->SetValue(currentSettings->GetIsServer());
 		javaUseDefs->SetValue(!currentSettings->GetJavaOverride());
 		memoryUseDefs->SetValue(!currentSettings->GetMemoryOverride());
 		updateUseDefs->SetValue(!currentSettings->GetUpdatesOverride());
@@ -969,7 +986,9 @@ void SettingsDialog::UpdateCheckboxStuff()
 		winHeightSpin->Enable(!(winMaxCheckbox->GetValue() || compatCheckbox->GetValue()));
 
 		langSelectorBox->Enable(!useSystemLangCheck->GetValue());
-
+		
+		//isServer->Enable(settings->GetIsServer());
+		
 		proxyHostTextbox->Enable(!noProxyRBtn->GetValue());
 		proxyPortTextbox->Enable(!noProxyRBtn->GetValue());
 		proxyUserTextbox->Enable(!noProxyRBtn->GetValue());
@@ -1003,4 +1022,5 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxDialog)
 	EVT_CHECKBOX(ID_OverrideMemory, SettingsDialog::OnUpdateCheckboxes)
 	EVT_CHECKBOX(ID_OverrideLogin, SettingsDialog::OnUpdateCheckboxes)
 	EVT_RADIOBUTTON(ID_UseProxy, SettingsDialog::OnUpdateCheckboxes)
+	EVT_CHECKBOX(ID_IsServer, SettingsDialog::OnUpdateCheckboxes)
 END_EVENT_TABLE()

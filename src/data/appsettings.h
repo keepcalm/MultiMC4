@@ -24,6 +24,7 @@
 
 #include "utils/osutils.h"
 
+
 #if WINDOWS
 #define JPATH_FIELD_NAME "JPathWindows"
 #elif OSX
@@ -149,10 +150,16 @@ public:
 
 	DEFINE_SETTING(AutoUpdate, bool, true);
 	DEFINE_SETTING(UseDevBuilds, bool, false);
+	
 
-	DEFINE_ENUM_SETTING(GUIMode, GUIMode, GUI_Simple);
+	DEFINE_ENUM_SETTING(GUIMode,
+			    GUIMode, GUI_Simple);
+	
 
 	DEFINE_ENUM_SETTING(InstSortMode, InstSortMode, Sort_LastLaunch);
+	
+	DEFINE_SETTING(IsServer, bool ,false);
+
 
 	// These are special... No macros for them.
 	virtual wxColor GetConsoleSysMsgColor() const { return wxColor(GetSetting<wxString>("ConsoleSysMsgColor", "#0000FF")); }
@@ -173,6 +180,7 @@ protected:
 	template <typename T>
 	T GetSetting(const wxString &key, T defValue) const
 	{
+		
 		T val;
 		if (config->Read(key, &val))
 			return val;

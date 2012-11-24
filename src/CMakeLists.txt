@@ -145,6 +145,7 @@ data/world.cpp
 data/texturepack.cpp
 data/texturepacklist.cpp
 data/stdinstance.cpp
+data/serverinstance.cpp
 data/instancemodel.cpp
 data/forgeversions.cpp
 data/insticonlist.cpp
@@ -215,6 +216,7 @@ data/world.h
 data/texturepack.h
 data/texturepacklist.h
 data/stdinstance.h
+data/serverinstance.h
 data/instancemodel.h
 data/forgeversions.h
 data/insticonlist.h

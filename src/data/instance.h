@@ -52,12 +52,13 @@ bool IsValidInstance(wxFileName rootDir);
 	virtual bool Get ## overrideName ## Override() const { return GetSetting<bool>(STR_VALUE(Override ## overrideName), false); } \
 	virtual void Set ## overrideName ## Override( bool value ) {  SetSetting<bool>(STR_VALUE(Override ## overrideName), value); }
 
-class Instance : public SettingsBase
+class Instance : public SettingsBase 
 {
 public:
 	enum Type
 	{
 		INST_TYPE_STANDARD,
+		INST_TYPE_SERVER,
 	};
 
 	static Instance *LoadInstance(wxString rootDir);
@@ -144,6 +145,7 @@ public:
 	DEFINE_OVERRIDDEN_SETTING(MCWindowWidth, int);
 	DEFINE_OVERRIDDEN_SETTING(MCWindowMaximize, bool);
 	DEFINE_OVERRIDDEN_SETTING(UseAppletWrapper, bool);
+	DEFINE_OVERRIDDEN_SETTING(IsServer, bool);
 
 	UpdateMode GetUpdateMode() const { return (UpdateMode)GetSetting<int>("UpdateMode", settings->GetUpdateMode()); };
 
@@ -158,6 +160,7 @@ public:
 	// and these are specific to instances only
 	wxString GetJarVersion() const { return GetSetting<wxString>("JarVersion","Unknown"); };
 	void SetJarVersion( wxString value ) {  SetSetting<wxString>("JarVersion", value); };
+
 
 	uint64_t GetLastLaunch() const
 	{

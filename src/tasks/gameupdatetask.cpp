@@ -36,6 +36,8 @@ GameUpdateTask::GameUpdateTask(Instance *inst, int64_t latestVersion, bool force
 
 GameUpdateTask::~GameUpdateTask() {}
 
+GameUpdateTask::GameUpdateTask(Instance *inst, bool forceUpdate) : Task(), m_inst(inst), m_forceUpdate(forceUpdate) {}
+
 wxThread::ExitCode GameUpdateTask::TaskStart()
 {
 	if (!LoadJarURLs())
@@ -83,18 +85,37 @@ wxThread::ExitCode GameUpdateTask::TaskStart()
 bool GameUpdateTask::LoadJarURLs()
 {
 	SetState(STATE_DETERMINING_PACKAGES);
-	wxString jarList[] =
-	{ 
-		"minecraft.jar", "lwjgl_util.jar", "jinput.jar", "lwjgl.jar"
-	};
+	
 	
 	wxString mojangURL ("http://s3.amazonaws.com/MinecraftDownload/");
+	if (m_inst->GetType() == Instance::INST_TYPE_STANDARD) {
+		wxString jarList[] = 
+		{ 
+			"minecraft.jar", "lwjgl_util.jar", "jinput.jar", "lwjgl.jar"
+		};
 	
-	for (size_t i = 0; i < jarURLs.size() - 1; i++)
-	{
-		jarURLs[i] = mojangURL + jarList[i];
+	
+		
+	
+		for (size_t i = 0; i < jarURLs.size() - 1; i++)
+		{
+			jarURLs[i] = mojangURL + jarList[i];
+		}
 	}
+	else {
+		wxString jarList[] = 
+		{ 
+			"launcher/minecraft_server.jar"
+		};
 	
+	
+// 		wxString mojangURL ("http://s3.amazonaws.com/MinecraftDownload/");
+	
+		for (size_t i = 0; i < jarURLs.size() - 1; i++)
+		{
+			jarURLs[i] = mojangURL + jarList[i];
+		}
+	}
 	wxString nativeJar = wxEmptyString;
 	wxOperatingSystemId osID = wxPlatformInfo::Get().GetOperatingSystemId();
 #if WINDOWS
@@ -106,8 +127,9 @@ bool GameUpdateTask::LoadJarURLs()
 #else
 #error Detected unsupported OS.
 #endif
-	
-	jarURLs[jarURLs.size() - 1] = mojangURL + nativeJar;
+	if (m_inst->GetType() == Instance::INST_TYPE_STANDARD) {
+		jarURLs[jarURLs.size() - 1] = mojangURL + nativeJar;
+	}
 	return true;
 }
 
@@ -205,9 +227,9 @@ void GameUpdateTask::DownloadJars()
 			SetState(STATE_DOWNLOADING, wxFileName(currentFile.GetPath()).GetFullName());
 
 			wxFileName dlDest(m_inst->GetBinDir().GetFullPath(), 
-							  wxFileName(currentFile.GetPath()).GetFullName());
+							wxFileName(currentFile.GetPath()).GetFullName());
 			
-			if (currentFile.GetURL().Contains("minecraft.jar") && 
+			if (currentFile.GetURL().Contains("minecraft.jar") || currentFile.GetURL().Contains("minecraft_server.jar") && 
 				m_inst->GetMCBackup().FileExists())
 			{
 				wxRemoveFile(m_inst->GetMCBackup().GetFullPath());
@@ -309,13 +331,16 @@ void GameUpdateTask::DownloadJars()
 
 void GameUpdateTask::ExtractNatives()
 {
+	if (m_inst->GetType() == Instance::INST_TYPE_SERVER)
+		// the server doesn't do this
+		return;
+		
 	SetState(STATE_EXTRACTING_PACKAGES);
 	SetProgress(90);
 	
 	wxFileName nativesJar(Path::Combine(m_inst->GetBinDir(), 
 		wxFileName(jarURLs[jarURLs.size() - 1]).GetFullName()));
-	wxFileName nativesDir = wxFileName::DirName(Path::Combine(m_inst->GetBinDir(), 
-															  "natives"));
+	wxFileName nativesDir = wxFileName::DirName(Path::Combine(m_inst->GetBinDir(), "natives"));
 	
 	if (!nativesDir.DirExists())
 		nativesDir.Mkdir();

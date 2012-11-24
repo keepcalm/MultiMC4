@@ -34,6 +34,11 @@ LoginTask::LoginTask(UserInfo& uInfo, Instance* inst, bool forceUpdate)
 
 wxThread::ExitCode LoginTask::TaskStart()
 {
+	if (m_inst->GetType() == Instance::INST_TYPE_SERVER) {
+		SetStatus("Servers don't need to be logged in...");
+		m_result = LoginResult("","","",0,false,false,false);
+		return (ExitCode)1;
+	}
 	SetStatus(_("Logging in..."));
 
 	CURL *curl = InitCurlHandle();

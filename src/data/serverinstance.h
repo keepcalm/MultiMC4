@@ -15,29 +15,33 @@
 //
 
 #pragma once
+#include "instance.h"
 
-#include <wx/process.h>
 
-class InstConsoleWindow;
-class Instance;
-
-class MinecraftProcess : public wxProcess
+class ServerInstance : public Instance 
 {
-public:
-	static wxProcess *Launch(Instance * source, InstConsoleWindow* parent, wxString username, wxString sessionID);
-	static wxProcess *Launch(Instance * source, InstConsoleWindow* parent);
-
-public:
-	bool ProcessInput();
-	void KillMinecraft();
-	bool AlreadyKilled() const
-	{
-		return m_wasKilled;
-	}
+private:
+	wxString m_instRootPath;
 protected:
-	MinecraftProcess(Instance * source, InstConsoleWindow* parent);
-	void OnTerminate ( int pid, int status );
-	bool m_wasKilled;
-	InstConsoleWindow* m_parent;
-	Instance * m_source;
+	wxFileName m_serverJar;
+	wxFileName m_instRoot;
+public:
+	wxString mcRootFolder;
+	
+	ServerInstance(wxString rootDir);
+
+	wxFileName GetRootDir() const;
+	wxFileName GetInstModsDir() const;
+	
+	// Minecraft dir subfolders
+	wxFileName GetMCDir() const;
+	wxFileName GetBinDir() const;
+	wxFileName GetSavesDir() const;
+	wxFileName GetMLModsDir() const;
+	wxFileName GetCoreModsDir() const;
+	wxFileName GetMCJar() const;
+	wxFileName GetMCBackup() const;
+
+		
+	virtual Type GetType() const;
 };
