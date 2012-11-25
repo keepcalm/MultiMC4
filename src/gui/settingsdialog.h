@@ -82,7 +82,7 @@ protected:
 
 	// minecraft tab stuff
 	wxCheckBox *winUseDefs;
-	wxCheckBox *isServer;
+	wxComboBox *isServer;
 	wxCheckBox *compatCheckbox;
 	wxCheckBox *winMaxCheckbox;
 	wxSpinCtrl *winWidthSpin;
@@ -123,7 +123,7 @@ enum
 	ID_DetectJavaPath,
 
 	ID_MCMaximizeCheckbox,
-	ID_IsServer,
+//	ID_IsServer,
 	ID_CompatModeCheckbox,
 	ID_OverrideJava,
 	ID_OverrideWindow,

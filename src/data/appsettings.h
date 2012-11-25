@@ -22,6 +22,7 @@
 #include <wx/fileconf.h>
 #include <wx/confbase.h>
 
+
 #include "utils/osutils.h"
 
 
@@ -158,7 +159,7 @@ public:
 
 	DEFINE_ENUM_SETTING(InstSortMode, InstSortMode, Sort_LastLaunch);
 	
-	DEFINE_SETTING(IsServer, bool ,false);
+	
 
 
 	// These are special... No macros for them.

@@ -55,6 +55,10 @@ Instance *Instance::LoadInstance(wxString rootDir)
 		{
 			type = INST_TYPE_STANDARD;
 		}
+		int isServer = 0;
+		if (!fcfg.Read("isServer", &isServer)) {
+			isServer = INST_TYPE_STANDARD;
+		}
 
 		switch (type)
 		{

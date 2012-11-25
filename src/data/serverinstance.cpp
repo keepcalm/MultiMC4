@@ -16,10 +16,12 @@
 
 #include "serverinstance.h"
 #include "multimc_pragma.h"
+#include <iostream>
 
-
+using namespace std;
 ServerInstance::ServerInstance(wxString rootDir): Instance(rootDir)
 {
+	cout << "My GOD, it's a server instance!" << endl;
 	m_instRoot = wxFileNameFromPath(rootDir);
 	m_instRootPath = rootDir;
 	m_running = false;

@@ -333,8 +333,14 @@ SettingsDialog::SettingsDialog( wxWindow* parent, wxWindowID id, SettingsBase* s
 				auto box = new wxStaticBoxSizer(wxVERTICAL, mcPanel, _("Server/Client settings"));
 				auto sizer = new wxGridBagSizer();
 				int row = 0;
+				wxArrayString choices;
+				{
+					choices.Add(_("Server"));
+					choices.Add(_("Client"));
+				}
+				isServer = new wxComboBox(box->GetStaticBox(), -1, wxEmptyString,
+				wxDefaultPosition, wxDefaultSize, choices, wxCB_DROPDOWN | wxCB_READONLY);
 				
-				isServer = new wxCheckBox(mcPanel, ID_IsServer, _("Is this instance a server?"));
 				sizer->Add(isServer, wxGBPosition(row,0), wxGBSpan(1,2),wxALL, 4);
 				box->Add(sizer,staticBoxInnerFlags);
 				mcBox->Add(box,staticBoxOuterFlags);
@@ -686,7 +692,15 @@ Are you sure you want to use dev builds?"),
 	else
 	{
 		// apply instance settings to the instance
-		currentSettings->SetIsServer(isServer->GetValue());
+		{
+			wxString val = isServer->GetStringSelection();
+			if (val.CmpNoCase("server")) {
+				currentSettings->Settype(1);
+			}
+			else {
+				currentSettings->Settype(0);
+			}
+		}
 		bool haveUpdate = !updateUseDefs->GetValue();
 		if(haveUpdate)
 		{
@@ -857,7 +871,18 @@ void SettingsDialog::LoadSettings()
 	}
 	else
 	{
-		isServer->SetValue(currentSettings->GetIsServer());
+		{
+			int val = currentSettings->Gettype();
+			switch (val) {
+				case Instance::INST_TYPE_SERVER:
+					isServer->SetSelection(isServer->FindString("Server"));
+					break;
+				default:
+					isServer->SetSelection(isServer->FindString("Client"));
+					break;
+			}
+		}
+		//isServer->SetValue(currentSettings->Gettype());
 		javaUseDefs->SetValue(!currentSettings->GetJavaOverride());
 		memoryUseDefs->SetValue(!currentSettings->GetMemoryOverride());
 		updateUseDefs->SetValue(!currentSettings->GetUpdatesOverride());

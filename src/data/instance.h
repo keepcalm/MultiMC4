@@ -145,7 +145,7 @@ public:
 	DEFINE_OVERRIDDEN_SETTING(MCWindowWidth, int);
 	DEFINE_OVERRIDDEN_SETTING(MCWindowMaximize, bool);
 	DEFINE_OVERRIDDEN_SETTING(UseAppletWrapper, bool);
-	DEFINE_OVERRIDDEN_SETTING(IsServer, bool);
+	DEFINE_SETTING(type, int, 0);
 
 	UpdateMode GetUpdateMode() const { return (UpdateMode)GetSetting<int>("UpdateMode", settings->GetUpdateMode()); };
 
