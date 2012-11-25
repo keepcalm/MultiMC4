@@ -111,6 +111,7 @@ public:
 	int StartTask(Task *task);
 	void LoginClicked();
 	void DoLogin(UserInfo info, bool playOffline = false, bool forceUpdate = false);
+	void DoLogin();
 	void ShowLoginDlg(wxString errorMsg);
 
 	void DownloadInstallUpdates(const wxString &downloadURL, bool installNow = true);

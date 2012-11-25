@@ -109,6 +109,71 @@ wxProcess* MinecraftProcess::Launch ( Instance* source, InstConsoleWindow* paren
 	}
 	return instProc;
 }
+// for server instances
+wxProcess* MinecraftProcess::Launch ( Instance* source, InstConsoleWindow* parent )
+{
+	// Set lastLaunch
+	source->SetLastLaunchNow();
+
+	/*if (username.IsEmpty())
+		username = "Offline";
+	
+	if (sessionID.IsEmpty())
+		sessionID = "Offline";*/
+	
+	ExtractLauncher(source);
+	
+	// window size parameter (depends on some flags also)
+	/*wxString winSizeArg;
+	if (!source->GetUseAppletWrapper())
+		winSizeArg = "compatmode";
+	else if (source->GetMCWindowMaximize())
+		winSizeArg = "max";
+	else
+		winSizeArg << source->GetMCWindowWidth() << "x" << source->GetMCWindowHeight();
+	
+	// putting together the window title*/
+	wxString windowTitle;
+	windowTitle << "MultiMC: " << source->GetName();
+	
+	// now put together the launch command in the form:
+	// "%java%" %extra_args% -Xms%min_memory%m -Xmx%max_memory%m -jar MultiMCLauncher.jar "%user_name%" "%session_id%" "%window_title%" "%window_size%"
+	wxString launchCmd;
+	launchCmd << DQuote(source->GetJavaPath()) << " " << source->GetJvmArgs()
+	          << " -Xms" << source->GetMinMemAlloc() << "m" << " -Xmx" << source->GetMaxMemAlloc() << "m"
+	          << " -jar MultiMCLauncher.jar "
+	          << " " << "true";// << " " << DQuote(sessionID) << " " << DQuote(windowTitle) << " " << DQuote(winSizeArg);
+	
+	// create a (custom) process object!
+	MinecraftProcess *instProc = new MinecraftProcess(source, parent);
+	instProc->Redirect();
+	
+	// set up environment path
+	wxExecuteEnv env;
+	wxFileName mcDir = source->GetMCDir();
+	mcDir.MakeAbsolute();
+	env.cwd = mcDir.GetFullPath();
+	
+	parent->AppendMessage(wxString::Format(_("Instance folder is:\n%s\n"), env.cwd.c_str()));
+	
+	// run minecraft using the stuff above :)
+	int pid = wxExecute(launchCmd,wxEXEC_ASYNC|wxEXEC_MAKE_GROUP_LEADER,instProc,&env);
+	if(pid > 0)
+	{
+		instProc->m_pid = pid;
+		parent->LinkProcess(instProc);
+		parent->AppendMessage(wxString::Format(_("Instance started with command:\n%s\n"), launchCmd.c_str()));
+	}
+	else
+	{
+		parent->AppendMessage(wxString::Format(_("Failed to start instance with command:\n%s\n"), launchCmd.c_str()),
+		                      InstConsoleWindow::MSGT_STDERR);
+		parent->AppendMessage(_("This can mean that you either don't have Java installed,\n or that you need to set up Java path in MultiMC settings."),InstConsoleWindow::MSGT_STDERR);
+		delete instProc;
+		instProc = nullptr;
+	}
+	return instProc;
+}
 
 MinecraftProcess::MinecraftProcess(Instance * source, InstConsoleWindow* parent)
 	: wxProcess(wxPROCESS_REDIRECT), m_wasKilled(false), m_parent(parent)

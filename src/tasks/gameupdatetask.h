@@ -39,6 +39,7 @@ class GameUpdateTask : public Task
 {
 public:
 	GameUpdateTask(Instance *inst, int64_t latestVersion, bool forceUpdate);
+	GameUpdateTask(Instance *inst, bool forceUpdate);
 	virtual ~GameUpdateTask();
 	
 protected:

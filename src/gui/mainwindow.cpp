@@ -54,6 +54,7 @@
 #include <wx/dir.h>
 #include <wx/fs_arc.h>
 #include <wx/fs_mem.h>
+#include <iostream>
 #ifdef __WXGTK__
 #include <wx/aboutdlg.h>
 #endif
@@ -78,7 +79,7 @@
 
 #include "config.h"
 #include "buildtag.h"
-
+using namespace std;
 const int instNameLengthLimit = 25;
 
 const wxSize minSize = wxSize(620, 400);
@@ -896,14 +897,18 @@ void MainWindow::OnInstActivated(InstanceCtrlEvent &event)
 }
 
 void MainWindow::LoginClicked()
-{
+{	
+	cout << "Started a new login process..." << endl;
 	auto currentInstance = instItems.GetSelectedInstance();
 	if (!currentInstance)
 	{
 		return;
 	}
-	if (currentInstance->GetType() == Instance::INST_TYPE_SERVER)
+	cout << (currentInstance->GetType() == Instance::INST_TYPE_SERVER) << endl;
+	if (currentInstance->GetType() == Instance::INST_TYPE_SERVER) {
+		cout << "Server instance started..." << endl;
 		DoLogin();
+	}
 	if (currentInstance->GetAutoLogin() && wxFileExists("lastlogin4"))
 	{
 		UserInfo lastLogin;
@@ -920,7 +925,6 @@ void MainWindow::DoLogin(UserInfo info, bool playOffline, bool forceUpdate)
 {
 	auto currentInstance = instItems.GetSelectedInstance();
 	info.SaveToFile("lastlogin4");
-
 	if (!playOffline)
 	{
 		LoginTask *task = new LoginTask(info, currentInstance, forceUpdate);
@@ -934,6 +938,20 @@ void MainWindow::DoLogin(UserInfo info, bool playOffline, bool forceUpdate)
 		OnLoginComplete(lr);
 	}
 }
+
+
+
+void MainWindow::DoLogin()
+{
+	auto currentInstance = instItems.GetSelectedInstance();
+	if (currentInstance->GetType() == Instance::INST_TYPE_SERVER) {
+		// new login response with dummy info
+		OnLoginComplete(new LoginResult("","","",0,false,false,false));
+		return;
+	}
+}
+	
+
 
 void MainWindow::ShowLoginDlg(wxString errorMsg)
 {
@@ -978,8 +996,8 @@ void MainWindow::OnLoginComplete( const LoginResult& result )
 	}
 	//if (!result.loginFailed)
 	//{
-		// Login success
-		Instance *inst = currentInstance;
+	// Login success
+	Instance *inst = currentInstance;
 	if (!isServer) {
 		// If the session ID is empty, the game updater will not be run.
 		wxString sessionID = result.sessionID;
@@ -994,6 +1012,7 @@ void MainWindow::OnLoginComplete( const LoginResult& result )
 		}
 	}
 	else { // FIXME allow user to force update server
+		
 		auto task =new GameUpdateTask(inst, false);
 		StartTask(task);
 		delete task;
@@ -1013,7 +1032,7 @@ void MainWindow::OnLoginComplete( const LoginResult& result )
 		if (!wxPersistenceManager::Get().RegisterAndRestore(cwin))
 			cwin->CenterOnScreen();
 		if (isServer) {
-			if (MinecraftProcess::Launch(inst, cwing) != nullptr) {
+			if (MinecraftProcess::Launch(inst, cwin) != nullptr) {
 				Show(false);
 				cwin->Show(settings->GetShowConsole());
 				instListCtrl->ReloadAll();
